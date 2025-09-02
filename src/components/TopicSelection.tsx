@@ -1,10 +1,12 @@
 import React from 'react';
-import { BookOpen, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { BookOpen, CheckCircle, AlertCircle, XCircle, Brain, Flag } from 'lucide-react';
 import { Progress } from '../types';
 
 interface TopicSelectionProps {
   topics: string[];
   onSelect: (topic: string) => void;
+  onQuiz: () => void;
+  onFlagged: () => void;
   isDark: boolean;
   progress: Progress;
   level: string;
@@ -14,6 +16,8 @@ interface TopicSelectionProps {
 export const TopicSelection: React.FC<TopicSelectionProps> = ({ 
   topics, 
   onSelect, 
+  onQuiz,
+  onFlagged,
   isDark, 
   progress, 
   level, 
@@ -46,6 +50,24 @@ export const TopicSelection: React.FC<TopicSelectionProps> = ({
         <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
           Choose a topic to start studying flashcards
         </p>
+      </div>
+      
+      {/* Action Buttons */}
+      <div className="flex justify-center space-x-4 mb-8">
+        <button
+          onClick={onQuiz}
+          className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+        >
+          <Brain size={20} />
+          <span>Take Quiz</span>
+        </button>
+        <button
+          onClick={onFlagged}
+          className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+        >
+          <Flag size={20} />
+          <span>Flagged Terms</span>
+        </button>
       </div>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
