@@ -6,6 +6,8 @@ import { LevelSelection } from './components/LevelSelection';
 import { SubjectSelection } from './components/SubjectSelection';
 import { TopicSelection } from './components/TopicSelection';
 import { FlashcardView } from './components/FlashcardView';
+import { QuizView } from './components/QuizView';
+import { FlaggedTermsView } from './components/FlaggedTermsView';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { NavigationState, Level, Subject, Progress } from './types';
 import flashcardsData from './data.json';
@@ -17,17 +19,19 @@ function App() {
     level: null,
     subject: null,
     topic: null,
+    view: null,
   });
 
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
 
-  const navigate = (level?: Level, subject?: Subject, topic?: string) => {
+  const navigate = (level?: Level, subject?: Subject, topic?: string, view?: 'topics' | 'flashcards' | 'quiz' | 'flagged') => {
     setNavigation({
       level: level || null,
       subject: subject || null,
       topic: topic || null,
+      view: view || null,
     });
   };
 
@@ -84,6 +88,20 @@ function App() {
     return Object.keys(subjectData);
   };
 
+  const getAllFlashcardsForSubject = () => {
+    if (!navigation.level || !navigation.subject) {
+      return {};
+    }
+
+    const levelData = flashcardsData[navigation.level];
+    if (!levelData) return {};
+
+    const subjectData = levelData[navigation.subject];
+    if (!subjectData) return {};
+
+    return subjectData;
+  };
+
   const getTopicKey = () => {
     if (!navigation.level || !navigation.subject || !navigation.topic) {
       return '';
@@ -123,7 +141,9 @@ function App() {
         {navigation.level && navigation.subject && !navigation.topic && (
           <TopicSelection 
             topics={getCurrentTopics()}
-            onSelect={(topic) => navigate(navigation.level, navigation.subject, topic)}
+            onSelect={(topic) => navigate(navigation.level, navigation.subject, topic, 'flashcards')}
+            onQuiz={() => navigate(navigation.level, navigation.subject, undefined, 'quiz')}
+            onFlagged={() => navigate(navigation.level, navigation.subject, undefined, 'flagged')}
             isDark={isDark}
             progress={progress}
             level={navigation.level}
@@ -131,7 +151,29 @@ function App() {
           />
         )}
         
-        {navigation.level && navigation.subject && navigation.topic && (
+        {navigation.level && navigation.subject && navigation.view === 'quiz' && (
+          <QuizView 
+            allFlashcards={getAllFlashcardsForSubject()}
+            progress={progress}
+            isDark={isDark}
+            level={navigation.level}
+            subject={navigation.subject}
+            onBack={() => navigate(navigation.level, navigation.subject)}
+          />
+        )}
+        
+        {navigation.level && navigation.subject && navigation.view === 'flagged' && (
+          <FlaggedTermsView 
+            allFlashcards={getAllFlashcardsForSubject()}
+            progress={progress}
+            isDark={isDark}
+            level={navigation.level}
+            subject={navigation.subject}
+            onBack={() => navigate(navigation.level, navigation.subject)}
+          />
+        )}
+        
+        {navigation.level && navigation.subject && navigation.topic && navigation.view === 'flashcards' && (
           <FlashcardView 
             flashcards={getCurrentFlashcards()}
             topicKey={getTopicKey()}

@@ -20,4 +20,20 @@ export interface NavigationState {
   level: Level | null;
   subject: Subject | null;
   topic: string | null;
+  view: 'topics' | 'flashcards' | 'quiz' | 'flagged' | null;
+}
+
+export interface QuizQuestion {
+  id: number;
+  term: string;
+  correctAnswer: string;
+  options: string[];
+  topicKey: string;
+}
+
+export interface QuizResult {
+  score: number;
+  total: number;
+  questions: QuizQuestion[];
+  answers: { [key: number]: string };
 }
